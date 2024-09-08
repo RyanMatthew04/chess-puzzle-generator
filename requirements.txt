@@ -1,7 +1,4 @@
-pandas
 numpy
 tensorflow
 flask
-warnings
 python-chess
-pickle
