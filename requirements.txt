@@ -1,4 +1,3 @@
 numpy
-tensorflow
 flask
 python-chess
