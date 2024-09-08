@@ -18,7 +18,7 @@ exceptiongroup==1.2.2
 executing==2.1.0
 Flask==3.0.3
 flatbuffers==24.3.25
-gast==0.6.0
+gast<=0.4.0
 google-pasta==0.2.0
 grpcio==1.66.1
 gunicorn==23.0.0
