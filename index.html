@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Puzzle Generator</title>
+    
+    <!-- Load Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Add custom styles -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #myBoard {
+            width: 400px;
+            margin-bottom: 20px;
+        }
+
+        #generateBtn, #flipBtn, #undoBtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+        }
+
+        #generateBtn:hover, #flipBtn:hover, #undoBtn:hover {
+            background-color: #0056b3;
+        }
+
+        #generateBtn:active, #flipBtn:active, #undoBtn:active {
+            background-color: #004080;
+        }
+
+        #feedback {
+            font-size: 16px;
+            color: #333;
+            margin-top: 10px;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./lib/chessjs/css/chessboard-1.0.0.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.0/chess.min.js"></script> <!-- Chess.js for game logic -->
+</head>
+<body>
+
+    <h2>White to play and mate in 1..</h2>
+    <div id="myBoard" aria-label="Chess board for puzzle generation"></div>
+    
+    <div class="btn-group">
+        <button id="generateBtn">Generate Puzzle</button>
+        <button id="undoBtn">Undo Move</button>
+    </div>
+    
+    <p id="feedback">Solve the puzzle!</p> <!-- Feedback section for move validation -->
+
+    <script src="./lib/chessjs/js/chessboard-1.0.0.min.js"></script>
+    <script>
+        var board, game;
+
+        // Initialize the board
+        function initializeBoard(fen = 'start') {
+            board = Chessboard('myBoard', {
+                draggable: true,
+                position: fen,
+                onDrop: onDrop
+            });
+            game = new Chess(fen);  // Initialize the chess.js game with the FEN
+        }
+
+        // Function to validate and drop moves
+        function onDrop(source, target) {
+            var move = game.move({
+                from: source,
+                to: target,
+                promotion: 'q' // always promote to a queen for simplicity
+            });
+
+            if (move === null) {
+                // Illegal move, revert
+                return 'snapback';
+            } else {
+                checkPuzzleSolved();
+            }
+        }
+
+        // Function to check if the puzzle is solved (basic checkmate in one)
+        function checkPuzzleSolved() {
+            if (game.in_checkmate()) {
+                $('#feedback').text('Correct! Checkmate!');
+            } else {
+                $('#feedback').text('Keep trying...');
+            }
+        }
+
+        // Generate a random puzzle (simulated FEN retrieval)
+        $('#generateBtn').click(function() {
+            $.ajax({
+                url: 'http://127.0.0.1:5500/generate_fen',
+                method: 'GET',
+                success: function(response) {
+                    var fen = response.fen;
+                    var fenParts = fen.split(" ");
+                    fenParts[1] = "w";  // Set the side to move as white
+                    fen = fenParts.join(" ");
+                    board = Chessboard('myBoard', {
+                        draggable: true,
+                        position: fen,
+                        onDrop: onDrop
+                    });
+                    game.load(fen); // Load the new FEN into the chess.js game
+                    $('#feedback').text('White to play and mate in 1..');
+                }
+            });
+        });
+
+        
+
+        // Undo the last move
+        $('#undoBtn').click(function() {
+            game.undo();
+            board = Chessboard('myBoard', {
+                draggable: true,
+                position: game.fen(),
+                onDrop: onDrop
+            });
+            $('#feedback').text('Move undone. Keep trying!');
+        });
+
+        // Initialize the board on load
+        initializeBoard();
+
+    </script>
+
+</body>
+</html>
