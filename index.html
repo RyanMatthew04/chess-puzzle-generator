@@ -132,6 +132,7 @@
                 url: 'https://chess-puzzle-generator.onrender.com/generate_fen',
                 method: 'GET',
                 success: function(response) {
+                    console.log('Received FEN:', response.fen);
                     var fen = response.fen;
                     var fenParts = fen.split(" ");
                     fenParts[1] = "w";  // Set the side to move as white
