@@ -136,13 +136,8 @@
                     var fenParts = fen.split(" ");
                     fenParts[1] = "w";  // Set the side to move as white
                     fen = fenParts.join(" ");
-                    board = Chessboard('myBoard', {
-                        draggable: true,
-                        position: fen,
-                        onDrop: onDrop,
-                        pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png'
-                    });
                     game.load(fen); // Load the new FEN into the chess.js game
+                    board.position(fen); // Load the new FEN into the chess.js game
                     $('#feedback').text('White to play and mate in 1..');
                 }
             });
@@ -153,12 +148,7 @@
         // Undo the last move
         $('#undoBtn').click(function() {
             game.undo();
-            board = Chessboard('myBoard', {
-                draggable: true,
-                position: game.fen(),
-                onDrop: onDrop,
-                pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png'
-            });
+            board.position(game.fen());
             $('#feedback').text('Move undone. Keep trying!');
         });
 
