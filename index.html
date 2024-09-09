@@ -72,12 +72,11 @@
     </style>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="./lib/chessjs/css/chessboard-1.0.0.min.css">
+    <link rel="stylesheet" href="/static/lib/chessjs/css/chessboard-1.0.0.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.12.0/chess.min.js"></script> <!-- Chess.js for game logic -->
 </head>
 <body>
-
-    <h2>White to play and mate in 1..</h2>
+    <p id="feedback">Click on 'Generate Puzzle' to start solving!</p> <!-- Feedback section for move validation -->
     <div id="myBoard" aria-label="Chess board for puzzle generation"></div>
     
     <div class="btn-group">
@@ -85,9 +84,9 @@
         <button id="undoBtn">Undo Move</button>
     </div>
     
-    <p id="feedback">Solve the puzzle!</p> <!-- Feedback section for move validation -->
+    
 
-    <script src="./lib/chessjs/js/chessboard-1.0.0.min.js"></script>
+    <script src="/static/lib/chessjs/js/chessboard-1.0.0.min.js"></script>
     <script>
         var board, game;
 
@@ -96,7 +95,8 @@
             board = Chessboard('myBoard', {
                 draggable: true,
                 position: fen,
-                onDrop: onDrop
+                onDrop: onDrop,
+                pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png'
             });
             game = new Chess(fen);  // Initialize the chess.js game with the FEN
         }
@@ -122,7 +122,7 @@
             if (game.in_checkmate()) {
                 $('#feedback').text('Correct! Checkmate!');
             } else {
-                $('#feedback').text('Keep trying...');
+                $('#feedback').text("Incorrect! Click on 'Undo Move' to retry");
             }
         }
 
@@ -139,7 +139,8 @@
                     board = Chessboard('myBoard', {
                         draggable: true,
                         position: fen,
-                        onDrop: onDrop
+                        onDrop: onDrop,
+                        pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png'
                     });
                     game.load(fen); // Load the new FEN into the chess.js game
                     $('#feedback').text('White to play and mate in 1..');
@@ -155,7 +156,8 @@
             board = Chessboard('myBoard', {
                 draggable: true,
                 position: game.fen(),
-                onDrop: onDrop
+                onDrop: onDrop,
+                pieceTheme: '/static/img/chesspieces/wikipedia/{piece}.png'
             });
             $('#feedback').text('Move undone. Keep trying!');
         });
