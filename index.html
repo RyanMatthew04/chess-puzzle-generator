@@ -129,7 +129,7 @@
         // Generate a random puzzle (simulated FEN retrieval)
         $('#generateBtn').click(function() {
             $.ajax({
-                url: 'http://127.0.0.1:5500/generate_fen',
+                url: 'https://chess-puzzle-generator.onrender.com/generate_fen',
                 method: 'GET',
                 success: function(response) {
                     var fen = response.fen;
