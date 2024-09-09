@@ -24,50 +24,92 @@
         #myBoard {
             width: 400px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        #generateBtn, #flipBtn, #undoBtn {
+        button {
             background-color: #007bff;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin: 10px 0; /* Remove left-right margins to make buttons align */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        #generateBtn:hover, #flipBtn:hover, #undoBtn:hover {
+        button:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
         }
 
-        #generateBtn:active, #flipBtn:active, #undoBtn:active {
+        button:active {
             background-color: #004080;
+            transform: translateY(0);
         }
 
         #feedback {
-            font-size: 16px;
+            font-size: 18px;
             color: #333;
-            margin-top: 10px;
+            margin-top: 20px;
             background-color: #ffffff;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             width: 400px;
+            text-align: center;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        #feedback.correct {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #feedback.incorrect {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center;
+            font-size: 32px;
+        }
+
+        /* Button container styled for side-by-side layout */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
+        }
+
+        .form-container {
             text-align: center;
         }
 
-        h1, h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            #myBoard, #feedback {
+                width: 100%;
+            }
 
-        .btn-group {
-            display: flex;
-            justify-content: space-between;
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
         }
     </style>
 
@@ -77,13 +119,21 @@
 </head>
 <body>
     <p id="feedback">Click on 'Generate Puzzle' to start solving!</p> <!-- Feedback section for move validation -->
+    
     <div id="myBoard" aria-label="Chess board for puzzle generation"></div>
-    
-    <div class="btn-group">
-        <button id="generateBtn">Generate Puzzle</button>
-        <button id="undoBtn">Undo Move</button>
+
+    <div class="form-container">
+        <div class="button-container">
+            <!-- Generate Puzzle Button -->
+            <form id="generateForm" action="/generate_chessboard" method="post">
+                <button type="submit" id="generateBtn">Generate Puzzle</button>
+            </form>
+
+            <!-- Undo Move Button -->
+            <button id="undoBtn">Undo Move</button>
+        </div>
     </div>
-    
+
     
 
     <script src="/static/lib/chessjs/js/chessboard-1.0.0.min.js"></script>
@@ -120,17 +170,19 @@
         // Function to check if the puzzle is solved (basic checkmate in one)
         function checkPuzzleSolved() {
             if (game.in_checkmate()) {
-                $('#feedback').text('Correct! Checkmate!');
+                $('#feedback').text('Correct! Checkmate!').addClass('correct').removeClass('incorrect');
             } else {
-                $('#feedback').text("Incorrect! Click on 'Undo Move' to retry");
+                $('#feedback').text("Incorrect! Click on 'Undo Move' to retry").addClass('incorrect').removeClass('correct');
             }
         }
 
         // Generate a random puzzle (simulated FEN retrieval)
-        $('#generateBtn').click(function() {
+        $('#generateForm').submit(function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+
             $.ajax({
-                url: 'https://chess-puzzle-generator.onrender.com/generate_fen',
-                method: 'GET',
+                url: $(this).attr('action'),
+                method: $(this).attr('method'),
                 success: function(response) {
                     console.log('Received FEN:', response.fen);
                     var fen = response.fen;
@@ -139,24 +191,20 @@
                     fen = fenParts.join(" ");
                     game.load(fen); // Load the new FEN into the chess.js game
                     board.position(fen); // Load the new FEN into the chess.js game
-                    $('#feedback').text('White to play and mate in 1..');
+                    $('#feedback').text('White to play and mate in 1..').removeClass('correct incorrect');
                 }
             });
         });
-
-        
 
         // Undo the last move
         $('#undoBtn').click(function() {
             game.undo();
             board.position(game.fen());
-            $('#feedback').text('Move undone. Keep trying!');
+            $('#feedback').text('Move undone. Keep trying!').removeClass('correct incorrect');
         });
 
         // Initialize the board on load
         initializeBoard();
-
     </script>
-
 </body>
 </html>
