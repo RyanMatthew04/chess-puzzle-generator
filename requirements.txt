@@ -59,7 +59,6 @@ namex==0.0.8
 nbclient==0.10.0
 nbconvert==7.16.4
 nbformat==5.10.4
-numpy==1.26.4
 opt-einsum==3.3.0
 optree==0.12.1
 packaging==24.1
