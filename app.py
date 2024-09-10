@@ -2,7 +2,7 @@ from flask import Flask, jsonify,send_from_directory
 import chess
 import numpy as np
 import chess.svg 
-
+import os
 import pickle
 
 app = Flask(__name__)
@@ -444,13 +444,19 @@ def generate_chessboard():
     
     def load_generator():
         paths = [
-            r"artifacts\bishop_mate_generator.pkl",
-            r"artifacts\knight_mate_generator.pkl",
-            r"artifacts\pawn_mate_generator.pkl",
-            r"artifacts\rook_mate_generator.pkl",
-            r"artifacts\queen_mate_generator.pkl"
+            os.path.join("artifacts", "bishop_mate_generator.pkl"),
+            os.path.join("artifacts", "knight_mate_generator.pkl"),
+            os.path.join("artifacts", "pawn_mate_generator.pkl"),
+            os.path.join("artifacts", "rook_mate_generator.pkl"),
+            os.path.join("artifacts", "queen_mate_generator.pkl")
         ]
+        
         path = np.random.choice(paths)
+        
+        # Check if the file exists before opening
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"The file {path} does not exist.")
+        
         with open(path, 'rb') as file:
             return pickle.load(file)
     while True:
