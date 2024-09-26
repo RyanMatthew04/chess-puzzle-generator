@@ -1,4 +1,4 @@
-# Project Name
+# Checkmate-in-1 Puzzle Generator
 This project aims to create an AI-powered web app that automatically generates unique chess puzzles where the user must find a checkmate in one move.
 It leverages Generative Adversarial Networks (GANs) to produce endless, diverse puzzles for chess players to improve their tactical skills.
 
